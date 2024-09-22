@@ -1,0 +1,25 @@
+lielServer:
+  image: idokad/liel-server
+  replicas: 4
+  containerPort: 3000
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 1
+  updateSleep: 10
+
+idoImage:
+  image: idokad/ido-image
+  replicas: 4
+  containerPort: 5173
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 1
+  updateSleep: 10
+
+mongodb:
+  image: mongo
+  replicas: 1
+  containerPort: 27017
+  username: username
+  password: password
+  database: mydatabase

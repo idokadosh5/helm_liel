@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ido-image
+spec:
+  replicas: {{ .Values.idoImage.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: {{ .Values.idoImage.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.idoImage.rollingUpdate.maxSurge }}
+  template:
+    metadata:
+      labels:
+        app: ido-image
+    spec:
+      containers:
+        - name: ido-image
+          image: {{ .Values.idoImage.image }}
+          ports:
+            - containerPort: {{ .Values.idoImage.containerPort }}
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - "sleep {{ .Values.idoImage.updateSleep }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ido-image-service
+spec:
+  selector:
+    app: ido-image
+  ports:
+    - protocol: TCP
+      port: 5173
+      targetPort: {{ .Values.idoImage.containerPort }}
+  type: ClusterIP

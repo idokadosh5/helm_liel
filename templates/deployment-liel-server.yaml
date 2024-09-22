@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: liel-server
+spec:
+  replicas: {{ .Values.lielServer.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: {{ .Values.lielServer.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.lielServer.rollingUpdate.maxSurge }}
+  template:
+    metadata:
+      labels:
+        app: liel-server
+    spec:
+      containers:
+        - name: liel-server
+          image: {{ .Values.lielServer.image }}
+          ports:
+            - containerPort: {{ .Values.lielServer.containerPort }}
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - "sleep {{ .Values.lielServer.updateSleep }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: liel-server-service
+spec:
+  selector:
+    app: liel-server
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: {{ .Values.lielServer.containerPort }}
+  type: ClusterIP
