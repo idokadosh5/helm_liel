@@ -44,3 +44,7 @@ spec:
       port: 5173
       targetPort: {{ .Values.idoImage.containerPort }}
   type: LoadBalancer
+  sessionAffinity: ClientIP  # Enable sticky sessions based on client IP
+  sessionAffinityConfig:  # Optional: Configure session affinity timeout
+    clientIP:
+      timeoutSeconds: 10800 
