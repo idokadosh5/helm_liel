@@ -5,6 +5,9 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.idoImage.replicas }}
+  selector:  # Add this selector
+    matchLabels:
+      app: ido-image
   strategy:
     type: RollingUpdate
     rollingUpdate:

@@ -5,6 +5,9 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.lielServer.replicas }}
+  selector:
+    matchLabels:
+      app: liel-server
   strategy:
     type: RollingUpdate
     rollingUpdate:
