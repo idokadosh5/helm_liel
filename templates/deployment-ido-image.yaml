@@ -41,6 +41,6 @@ spec:
     app: ido-image
   ports:
     - protocol: TCP
-      port: 8080
+      port: 5173
       targetPort: {{ .Values.idoImage.containerPort }}
   type: LoadBalancer
