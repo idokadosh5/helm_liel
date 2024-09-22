@@ -1,5 +1,5 @@
 lielServer:
-  image: idokad/liel-server
+  image: idokad/liel-server:6
   replicas: 4
   containerPort: 3000
   rollingUpdate:
@@ -8,7 +8,7 @@ lielServer:
   updateSleep: 10
 
 idoImage:
-  image: idokad/ido-image
+  image: idokad/ido-image:6
   replicas: 4
   containerPort: 5173
   rollingUpdate:
