@@ -2,7 +2,7 @@ namespace: liel-app
 
 lielServer:
   image: idokad/liel-server:8
-  replicas: 1
+  replicas: 4
   containerPort: 3000
   rollingUpdate:
     maxUnavailable: 1
@@ -11,7 +11,7 @@ lielServer:
 
 idoImage:
   image: idokad/ido-image:27
-  replicas: 2
+  replicas: 4
   containerPort: 5173
   rollingUpdate:
     maxUnavailable: 1
