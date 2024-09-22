@@ -1,3 +1,5 @@
+namespace: liel-app
+
 lielServer:
   image: idokad/liel-server:6
   replicas: 4
