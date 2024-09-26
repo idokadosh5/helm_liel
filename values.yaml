@@ -1,7 +1,7 @@
 namespace: liel-app
 
 lielServer:
-  image: idokad/liel-server:8
+  image: idokad/liel-server:9
   replicas: 4
   containerPort: 3000
   rollingUpdate:
