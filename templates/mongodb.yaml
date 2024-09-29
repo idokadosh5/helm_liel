@@ -24,31 +24,9 @@ spec:
         - name: mongo-persistent-storage
           mountPath: /data/db
         env:
-        - name: MONGO_INITDB_ROOT_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: mongo-secret
-              key: MONGO_INITDB_ROOT_USERNAME
-        - name: MONGO_INITDB_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongo-secret
-              key: MONGO_INITDB_ROOT_PASSWORD
-        - name: MONGO_INITDB_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: mongo-secret
-              key: MONGO_INITDB_USERNAME
-        - name: MONGO_INITDB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongo-secret
-              key: MONGO_INITDB_PASSWORD
-        - name: MONGO_INITDB_DATABASE
-          valueFrom:
-            configMapKeyRef:
-              name: mongo-config
-              key: MONGO_INITDB_DATABASE
+              MONGO_INITDB_ROOT_USERNAME: username
+              MONGO_INITDB_ROOT_PASSWORD: password
+              MONGO_INITDB_DATABASE: mydatabase
   volumeClaimTemplates:
   - metadata:
       name: mongo-persistent-storage
