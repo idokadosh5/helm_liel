@@ -49,7 +49,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongo
+  name: mongodb
   namespace: liel-app
 spec:
   clusterIP: None  # This makes the service headless
