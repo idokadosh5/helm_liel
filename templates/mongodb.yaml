@@ -1,41 +1,80 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: mongodb
-  namespace: {{ .Values.namespace }}
+  name: mongo
+  namespace: liel-app
 spec:
-  replicas: {{ .Values.mongodb.replicas }}
+  serviceName: "mongo"
+  replicas: 3  # Set the number of replicas as needed
   selector:
     matchLabels:
-      app: mongodb
+      app: mongo
   template:
     metadata:
       labels:
-        app: mongodb
+        app: mongo
     spec:
       containers:
-        - name: mongodb
-          image: {{ .Values.mongodb.image }}
-          ports:
-            - containerPort: {{ .Values.mongodb.containerPort }}
-          env:
-            - name: MONGO_INITDB_ROOT_USERNAME
-              value: {{ .Values.mongodb.username }}
-            - name: MONGO_INITDB_ROOT_PASSWORD
-              value: {{ .Values.mongodb.password }}
-            - name: MONGO_INITDB_DATABASE
-              value: {{ .Values.mongodb.database }}
+      - name: mongo
+        image: mongo:6.0
+        command:
+          - mongod
+          - "--replSet"
+          - rs0
+          - "--bind_ip_all"
+        ports:
+        - containerPort: 27017
+          name: mongo
+        volumeMounts:
+        - name: mongo-persistent-storage
+          mountPath: /data/db
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: MONGO_INITDB_ROOT_USERNAME
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: MONGO_INITDB_ROOT_PASSWORD
+        - name: MONGO_INITDB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: MONGO_INITDB_USERNAME
+        - name: MONGO_INITDB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: MONGO_INITDB_PASSWORD
+        - name: MONGO_INITDB_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-config
+              key: MONGO_INITDB_DATABASE
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-persistent-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi  # Specify the storage size
+      storageClassName: gp2  # Use your defined storage class
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongodb-service
-  namespace: {{ .Values.namespace }}
+  name: mongo
+  namespace: liel-app
 spec:
+  clusterIP: None  # This makes the service headless
   selector:
-    app: mongodb
+    app: mongo  # Match the label of your StatefulSet
   ports:
-    - protocol: TCP
-      port: {{ .Values.mongodb.containerPort }}
-      targetPort: {{ .Values.mongodb.containerPort }}
-  type: ClusterIP
+    - port: 27017
+      targetPort: 27017
+      protocol: TCP
