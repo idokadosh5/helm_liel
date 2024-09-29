@@ -4,4 +4,4 @@ metadata:
   name: mongo-config
   namespace: {{ .Values.namespacee }}
 data:
-  MONGO_INITDB_DATABASE: {{ .Values.auth.database }}
+  MONGO_INITDB_DATABASE: {{ .Values.mongodb.database }}
