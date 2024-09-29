@@ -4,4 +4,9 @@ metadata:
   name: mongo-config
   namespace: {{ .Values.namespacee }}
 data:
-  MONGO_INITDB_DATABASE: {{ .Values.mongodb.database }}
+  username: username  # Sets the value of the "username" key to "admin1"
+  mongodb.conf: |  # Defines the content of the MongoDB configuration file
+    storage:
+      dbPath: /data/db  # Sets the MongoDB data storage path
+    replication:
+      replSetName: "rs0"
