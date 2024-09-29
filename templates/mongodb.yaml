@@ -23,6 +23,9 @@ spec:
         volumeMounts:
         - name: mongo-persistent-storage
           mountPath: /data/db
+        - mountPath: /docker-entrypoint-initdb.d
+          name: mongodb-scripts
+          readOnly: true
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
           valueFrom:
@@ -34,15 +37,38 @@ spec:
             secretKeyRef:
               name: mongo-secret
               key: MONGO_INITDB_ROOT_PASSWORD
-  volumeClaimTemplates:
-  - metadata:
-      name: mongo-persistent-storage
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 10Gi  # Specify the storage size
-      storageClassName: gp2  # Use your defined storage class
+      volumes:
+      - name: mongodb-scripts
+        configMap:
+          name: mongodb-configmap
+          items:
+          - key: ensure-users.js
+            path: ensure-users.js
+      volumeClaimTemplates:
+      - metadata:
+          name: mongo-persistent-storage
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi  # Specify the storage size
+          storageClassName: gp2  # Use your defined storage class
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  namespace: liel-app
+spec:
+  clusterIP: None  # This makes the service headless
+  selector:
+    app: mongo  # Match the label of your StatefulSet
+  ports:
+    - port: 27017
+      targetPort: 27017
+      protocol: TCP
+
 
 ---
 apiVersion: v1
