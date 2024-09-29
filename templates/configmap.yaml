@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-config
+  namespace: {{ .Values.namespacee }}
+data:
+  MONGO_INITDB_DATABASE: {{ .Values.auth.database }}
