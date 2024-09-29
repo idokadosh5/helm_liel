@@ -70,17 +70,3 @@ spec:
       protocol: TCP
 
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongo
-  namespace: liel-app
-spec:
-  clusterIP: None  # This makes the service headless
-  selector:
-    app: mongo  # Match the label of your StatefulSet
-  ports:
-    - port: 27017
-      targetPort: 27017
-      protocol: TCP
