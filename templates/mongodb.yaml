@@ -24,9 +24,12 @@ spec:
         - name: mongo-persistent-storage
           mountPath: /data/db
         env:
-              MONGO_INITDB_ROOT_USERNAME: username
-              MONGO_INITDB_ROOT_PASSWORD: password
-              MONGO_INITDB_DATABASE: mydatabase
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: username
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: password
+        - name: MONGO_INITDB_DATABASE
+          value: mydatabase
   volumeClaimTemplates:
   - metadata:
       name: mongo-persistent-storage
