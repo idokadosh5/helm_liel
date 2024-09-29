@@ -19,9 +19,12 @@ idoImage:
   updateSleep: 10
 
 mongodb:
-  image: mongo
-  replicas: 1
+  image: mongo:6.0
+  replicas: 3  # Update replicas to match your desired setup
   containerPort: 27017
-  username: username
-  password: password
-  database: mydatabase
+  database: mydatabase  # Database name
+  persistence:
+    enabled: true          # Enable persistence
+    storageClass: gp2      # Storage class
+    accessMode: ReadWriteOnce  # Access mode
+    size: 10Gi             # Storage size
