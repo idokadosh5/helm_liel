@@ -1,13 +1,13 @@
 apiVersion: v1
-   kind: ConfigMap
-   metadata:
-     name: mongo-config
-     namespace: {{ .Values.namespace }}
-   data:
-     MONGO_INITDB_DATABASE: mydatabase
-     username: username
-     mongodb.conf: |
-       storage:
-         dbPath: /data/db
-       replication:
-         replSetName: "rs0"
+kind: ConfigMap
+metadata:
+  name: mongo-config
+  namespace: {{ .Values.namespace }}
+data:
+  MONGO_INITDB_DATABASE: {{ .Values.mongodb.database }}
+  username: {{ .Values.mongoUsername | default "username" }}
+  mongodb.conf: |
+    storage:
+      dbPath: /data/db
+    replication:
+      replSetName: "rs0"
