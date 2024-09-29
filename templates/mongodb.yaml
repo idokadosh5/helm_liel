@@ -23,9 +23,6 @@ spec:
         volumeMounts:
         - name: mongo-persistent-storage
           mountPath: /data/db
-        - mountPath: /docker-entrypoint-initdb.d
-          name: mongodb-scripts
-          readOnly: true
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
           valueFrom:
@@ -37,15 +34,16 @@ spec:
             secretKeyRef:
               name: mongo-secret
               key: MONGO_INITDB_ROOT_PASSWORD
-      volumeClaimTemplates:
-      - metadata:
-          name: mongo-persistent-storage
-        spec:
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 10Gi  # Specify the storage size
-          storageClassName: gp2  # Use your defined storage class
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-persistent-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi  # Specify the storage size
+      storageClassName: gp2  # Use your defined storage class
+
 
 ---
 apiVersion: v1
