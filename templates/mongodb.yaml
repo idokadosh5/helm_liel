@@ -5,7 +5,7 @@ metadata:
   namespace: liel-app
 spec:
   serviceName: "mongo"
-  replicas: 3  # Set the number of replicas as needed
+  replicas: 4  # Set the number of replicas as needed
   selector:
     matchLabels:
       app: mongo
