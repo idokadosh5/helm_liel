@@ -2,61 +2,86 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mongo
-  namespace: liel-app
 spec:
-  serviceName: "mongo"
-  replicas: 4  # Set the number of replicas as needed
   selector:
     matchLabels:
       app: mongo
+  serviceName: "mongo"
+  replicas: 3
   template:
     metadata:
       labels:
         app: mongo
     spec:
       containers:
-      - name: mongo
-        image: mongo:6.0
-        command: ["mongod", "--replSet", "rs0"]
-        ports:
-        - containerPort: 27017
-          name: mongo
-        volumeMounts:
-        - name: mongo-persistent-storage
-          mountPath: /data/db
-        env:
-        - name: MONGO_INITDB_ROOT_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: mongo-secret
-              key: MONGO_INITDB_ROOT_USERNAME
-        - name: MONGO_INITDB_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongo-secret
-              key: MONGO_INITDB_ROOT_PASSWORD
+        - name: mongo
+          image: mongo:6.0
+          startupProbe:
+            exec:
+              command:
+                - mongo
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+          livenessProbe:
+            exec:
+              command:
+                - mongo
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+          readinessProbe:
+            exec:
+              command:
+                - mongo
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: username
+                  name: mongodb-config
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: mongodb-secret
+          command:
+            - mongod
+            - "--bind_ip_all"
+            - --config=/etc/mongo/mongodb.conf
+          volumeMounts:
+            - name: mongo-volume
+              mountPath: /data/db
+            - name: mongodb-config
+              mountPath: /etc/mongo
+      volumes:
+        - name: mongodb-config
+          configMap:
+            name: mongodb-config
+            items:
+              - key: mongodb.conf
+                path: mongodb.conf
   volumeClaimTemplates:
-  - metadata:
-      name: mongo-persistent-storage
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 10Gi  # Specify the storage size
-      storageClassName: gp2  # Use your defined storage class
-
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongodb-service
-  namespace: liel-app
-spec:
-  clusterIP: None  # This makes the service headless
-  selector:
-    app: mongo  # Match the label of your StatefulSet
-  ports:
-    - port: 27017
-      targetPort: 27017
-      protocol: TCP
+    - metadata:
+        name: mongo-volume
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: demo-storage
+        resources:
+          requests:
+            storage: 1Gi
