@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: mongo
-          image: .Values.mongodb.image
+          image: {{ .Values.mongodb.image }}
           startupProbe:
             exec:
               command:
