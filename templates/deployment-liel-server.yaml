@@ -23,6 +23,13 @@ spec:
           image: {{ .Values.lielServer.image }}
           ports:
             - containerPort: {{ .Values.lielServer.containerPort }}
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
           lifecycle:
             postStart:
               exec:
